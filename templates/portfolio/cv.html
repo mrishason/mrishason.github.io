@@ -1,0 +1,122 @@
+{% extends "portfolio/base.html" %}
+{% load static %}
+
+{% block title %}Curriculum Vitae | {{ profile.full_name|default:"Ibrahim Mrisha" }}{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/cv.css' %}" />{% endblock %}
+
+{% block content %}
+  <main class="cv-page">
+    <div class="cv-toolbar">
+      <a href="{% url 'portfolio:home' %}">← Back to website</a>
+      <button type="button" onclick="window.print()">Print / Save PDF</button>
+    </div>
+
+    <article class="cv-document">
+      <header class="cv-header">
+        <div>
+          <p class="cv-label">Curriculum Vitae</p>
+          <h1>{{ profile.full_name|default:"Ibrahim Mrisha" }}</h1>
+          <h2>{{ profile.professional_title|default:"FullStack Developer" }}</h2>
+        </div>
+        <div class="cv-contact">
+          {% if profile.location %}<span>{{ profile.location }}</span>{% endif %}
+          {% if profile.phone %}<a href="tel:{{ profile.phone }}">{{ profile.phone }}</a>{% endif %}
+          {% if profile.email %}<a href="mailto:{{ profile.email }}">{{ profile.email }}</a>{% endif %}
+          {% if profile.website %}<a href="{{ profile.website }}">{{ profile.website }}</a>{% endif %}
+          {% if profile.linkedin_url %}<a href="{{ profile.linkedin_url }}">LinkedIn</a>{% endif %}
+          {% if profile.github_url %}<a href="{{ profile.github_url }}">GitHub</a>{% endif %}
+        </div>
+      </header>
+
+      <section class="cv-section">
+        <h3>Professional summary</h3>
+        <p>{{ profile.cv_summary|default:profile.short_bio|default:"Add your professional summary from the admin dashboard." }}</p>
+      </section>
+
+      <section class="cv-section">
+        <h3>Work experience</h3>
+        {% for experience in experiences %}
+          <article class="cv-entry">
+            <div class="cv-entry-heading">
+              <div>
+                <h4>{{ experience.job_title }}</h4>
+                <p>{{ experience.organization }}{% if experience.location %} · {{ experience.location }}{% endif %}</p>
+              </div>
+              <time>
+                {{ experience.start_date|date:"M Y" }} —
+                {% if experience.is_current %}Present{% else %}{{ experience.end_date|date:"M Y"|default:"Present" }}{% endif %}
+              </time>
+            </div>
+            {% if experience.description %}
+              <ul>
+                {% for line in experience.description.splitlines %}
+                  {% if line %}<li>{{ line }}</li>{% endif %}
+                {% endfor %}
+              </ul>
+            {% endif %}
+          </article>
+        {% empty %}
+          <p class="cv-empty">Add work experience from the admin dashboard.</p>
+        {% endfor %}
+      </section>
+
+      <section class="cv-section">
+        <h3>Education</h3>
+        {% for education in education_items %}
+          <article class="cv-entry">
+            <div class="cv-entry-heading">
+              <div>
+                <h4>{{ education.qualification }}</h4>
+                <p>
+                  {{ education.institution }}
+                  {% if education.field_of_study %} · {{ education.field_of_study }}{% endif %}
+                </p>
+              </div>
+              <time>
+                {% if education.start_date %}{{ education.start_date|date:"Y" }} — {% endif %}
+                {{ education.end_date|date:"Y"|default:"Present" }}
+              </time>
+            </div>
+            {% if education.description %}<p>{{ education.description }}</p>{% endif %}
+          </article>
+        {% empty %}
+          <p class="cv-empty">Add education details from the admin dashboard.</p>
+        {% endfor %}
+      </section>
+
+      <section class="cv-section">
+        <h3>Skills</h3>
+        {% if skills %}
+          <div class="cv-skills">
+            {% regroup skills by get_category_display as skill_groups %}
+            {% for group in skill_groups %}
+              <div>
+                <h4>{{ group.grouper }}</h4>
+                <p>
+                  {% for skill in group.list %}
+                    {{ skill.name }}{% if not forloop.last %}, {% endif %}
+                  {% endfor %}
+                </p>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="cv-empty">Add skills from the admin dashboard.</p>
+        {% endif %}
+      </section>
+
+      {% if projects %}
+        <section class="cv-section">
+          <h3>Selected projects</h3>
+          {% for project in projects %}
+            <article class="cv-entry compact">
+              <h4>{{ project.title }}</h4>
+              <p>{{ project.description }}</p>
+              {% if project.technologies %}<p><strong>Technologies:</strong> {{ project.technologies }}</p>{% endif %}
+            </article>
+          {% endfor %}
+        </section>
+      {% endif %}
+    </article>
+  </main>
+{% endblock %}

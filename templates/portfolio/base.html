@@ -1,0 +1,57 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="{{ profile.full_name|default:'Ibrahim Mrisha' }} — {{ profile.professional_title|default:'FullStack Developer' }}."
+    />
+    <title>{% block title %}{{ profile.full_name|default:"Ibrahim Mrisha" }}{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+    {% block extra_css %}{% endblock %}
+    <script src="{% static 'js/script.js' %}" defer></script>
+  </head>
+  <body>
+    <div class="top-line" aria-hidden="true"></div>
+
+    <header class="site-header">
+      <div class="nav-shell">
+        <a class="brand" href="{% url 'portfolio:home' %}#about">
+          {{ profile.full_name|default:"Ibrahim Mrisha" }}
+        </a>
+
+        <button
+          class="menu-button"
+          type="button"
+          aria-expanded="false"
+          aria-controls="site-navigation"
+          aria-label="Open navigation"
+        >
+          <span></span><span></span><span></span>
+        </button>
+
+        <nav id="site-navigation" class="site-nav" aria-label="Main navigation">
+          <a href="{% url 'portfolio:cv' %}">CV</a>
+          <a href="{% url 'portfolio:home' %}#conferences">Conferences</a>
+          <a href="{% url 'portfolio:home' %}#topics">Topics</a>
+          <a href="{% url 'portfolio:home' %}#portfolio">Portfolio</a>
+          <a href="{% url 'portfolio:home' %}#publications">Publications</a>
+          {% if user.is_staff %}
+            <a class="admin-link" href="{% url 'admin:index' %}">Dashboard</a>
+          {% endif %}
+        </nav>
+      </div>
+    </header>
+
+    {% block content %}{% endblock %}
+
+    <footer>
+      <p>
+        © <span id="year"></span> {{ profile.full_name|default:"Ibrahim Mrisha" }}.
+        Built with Django in Tanzania.
+      </p>
+    </footer>
+  </body>
+</html>
